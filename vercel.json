@@ -1,0 +1,9 @@
+{
+    "redirects": [
+        {
+            "source": "/log",
+            "destination": "/",
+            "permanent": true
+        }
+    ]
+}
