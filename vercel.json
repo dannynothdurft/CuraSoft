@@ -4,6 +4,31 @@
             "source": "/log",
             "destination": "/",
             "permanent": true
-        }
+        },
+        {
+            "source": "/settings",
+            "destination": "/",
+            "permanent": true
+        },
+        {
+            "source": "/curves",
+            "destination": "/",
+            "permanent": true
+        },
+        {
+            "source": "/patients",
+            "destination": "/",
+            "permanent": true
+        },
+        {
+            "source": "/legal",
+            "destination": "/",
+            "permanent": true
+        },
+        {
+            "source": "/privacy",
+            "destination": "/",
+            "permanent": true
+        },
     ]
 }
