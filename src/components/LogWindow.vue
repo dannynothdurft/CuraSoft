@@ -53,8 +53,7 @@
             :class="{
               'rounded-lg': count <= 10,
               'rounded-l-lg': page.number === 1 && count > 10,
-              'rounded-r-lg': page.number === filteredPages.length && count <= (page.number + 10),
-              'rounded-r-lg': page.number === 4,
+              'rounded-r-lg': (page.number === filteredPages.length && count <= (page.number + 10)) || page.number === 4,
               'bg-[#FF6F61] opacity-100': activePagination === page.number,
               'bg-[#FF6F61] opacity-50': activePagination !== page.number
             }"
