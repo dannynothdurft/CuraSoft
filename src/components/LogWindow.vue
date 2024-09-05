@@ -80,6 +80,15 @@
     import MagnifyingGlassSolid from './icons/MagnifyingGlassSolid.vue'
     import LoadingSpinner from './LoadingSpinner.vue';
 
+    // Interface für Log Einträge
+    interface LogEntry {
+        id: number;
+        typ: string;
+        message: string;
+        stamp: string;
+        username: string;
+    }
+
     // States
     // States für die Filter Buttons
     const tabs = [
@@ -103,7 +112,7 @@
     const activePagination = ref(1)
     const activeTab = ref('all')
     const count = ref(0)
-    const data = ref(null)
+    const data = ref<LogEntry[] | null>(null)
 
     /**
      * Setzt den aktiven Tab und lädt die entsprechenden Daten von der API.
