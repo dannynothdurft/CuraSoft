@@ -1,7 +1,11 @@
 <template>
     <footer class="flex justify-end gap-10 mx-10 py-3">
-        <RouterLink to="/privacy" :class="{'text-[#888888]': !isActive('/privacy')}">Datenschutz</RouterLink>
-        <RouterLink to="/legal" :class="{'text-[#888888]': !isActive('/legal')}">Impressum</RouterLink>
+        <RouterLink to="/privacy" :class="{'text-[#888888]': !isActive('/privacy'), 'hover:text-[#000000]': true}">
+            Datenschutz
+        </RouterLink>
+        <RouterLink to="/legal" :class="{'text-[#888888]': !isActive('/legal'), 'hover:text-[#000000]': true}">
+        Impressum
+        </RouterLink>
     </footer>
 </template>
 

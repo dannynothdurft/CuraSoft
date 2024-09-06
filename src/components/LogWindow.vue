@@ -17,7 +17,8 @@
             'rounded-l-lg': tab.key === 'all',
             'rounded-r-lg': tab.key === 'log',
             'bg-[#FF6F61] opacity-100': activeTab === tab.key,
-            'bg-[#FF6F61] opacity-50': activeTab !== tab.key
+            'bg-[#FF6F61] opacity-50': activeTab !== tab.key,
+            'bg-[#FF6F61] opacity-50 hover:opacity-100': activeTab !== tab.key
           }"
           @click="setActiveTab(tab.key)"
         >
@@ -55,7 +56,8 @@
               'rounded-l-lg': page.number === 1 && count > 10,
               'rounded-r-lg': (page.number === filteredPages.length && count <= (page.number + 10)) || page.number === 4,
               'bg-[#FF6F61] opacity-100': activePagination === page.number,
-              'bg-[#FF6F61] opacity-50': activePagination !== page.number
+              'bg-[#FF6F61] opacity-50': activePagination !== page.number,
+              'bg-[#FF6F61] opacity-50 hover:opacity-100': activePagination !== page.number,
             }"
             @click="setActivePagination(page.number)"
           >

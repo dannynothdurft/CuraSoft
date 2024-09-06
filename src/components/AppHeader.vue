@@ -7,9 +7,11 @@
                 v-for="(item, index) in navItems"
                 :key="index"
                 :to="item.path"
-                :class="{'border-b-[3px] border-white px-4 h-full flex justify-center items-center': isActive(item.path),
-                    'text-white px-4': !isActive(item.path)}"
-                >
+                :class="{
+                    'border-b-[3px] border-white px-4 h-full flex justify-center items-center': isActive(item.path),
+                    'text-white px-4 hover:border-b-[3px] hover:border-white h-full flex justify-center items-center': !isActive(item.path)
+                }"
+            >
                 {{ item.label }}
             </RouterLink>
         </nav>
