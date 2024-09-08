@@ -118,14 +118,14 @@
     const data = ref<LogEntry[] | null>(null)
 
     // fetchData wird ausgeführt, wenn die Komponente montiert ist
-    onMounted(async () => {
+    onMounted(() => {
       //Lädt die Daten von der API und aktualisiert die lokalen Daten- und Zählvariablen.
-      const response = await getData({});
-      
-      if (response) {
-        data.value = response.items
-        count.value = response.count
-      }
+      getData({})
+        .then(res => {
+          data.value = res.items
+          count.value = res.count
+        })
+        .catch(error => {console.error(error)});
     })
 
     /**
@@ -139,16 +139,16 @@
      *
      * @param tab - Der Pfad oder die Bezeichnung des aktuellen Tabs, der ausgewählt wurde.
      */
-    const setActiveTab = async (tab: string) => {
+    const setActiveTab = (tab: string) => {
       activeTab.value = tab
 
-      const response = await getData({tab: tab});
-
-      if (response) {
-        data.value = response.items
-        count.value = response.count
-        activePagination.value = 1
-      }
+      getData({tab: tab})
+        .then(res => {
+          data.value = res.items
+          count.value = res.count
+          activePagination.value = 1
+        })
+        .catch(error => {console.error(error)});
     }
 
     /**
@@ -156,14 +156,14 @@
      * 
      * @param page - Die Seite, die als aktiv gesetzt werden soll.
      */
-    const setActivePagination = async (page: number) => {
+    const setActivePagination = (page: number) => {
       activePagination.value = page
 
-      const response = await getData({tab: activeTab.value, page: page});
-
-      if (response) {
-        data.value = response.items
-      }
+      getData({tab: activeTab.value, page: page})
+        .then(res => {
+          data.value = res.items
+        })
+        .catch(error => {console.error(error)});
     }
 
     // Funktion zum Abrufen des Icons basierend auf dem Typ
