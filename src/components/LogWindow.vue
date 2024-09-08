@@ -72,7 +72,9 @@
     import { ref, computed, onMounted } from 'vue'
     import { formatDistanceToNowStrict } from 'date-fns'
     import { de } from 'date-fns/locale'
-    import axios from 'axios'
+
+    // import utils
+    import { getData } from '../utils/globalFunction'
 
     // import components
     import TriangleExclamationSolid from './icons/TriangleExclamationSolid.vue'
@@ -115,6 +117,17 @@
     const count = ref(0)
     const data = ref<LogEntry[] | null>(null)
 
+    // fetchData wird ausgeführt, wenn die Komponente montiert ist
+    onMounted(async () => {
+      //Lädt die Daten von der API und aktualisiert die lokalen Daten- und Zählvariablen.
+      const response = await getData({});
+      
+      if (response) {
+        data.value = response.items
+        count.value = response.count
+      }
+    })
+
     /**
      * Setzt den aktiven Tab und lädt die entsprechenden Daten von der API.
      *
@@ -126,30 +139,16 @@
      *
      * @param tab - Der Pfad oder die Bezeichnung des aktuellen Tabs, der ausgewählt wurde.
      */
-    const setActiveTab = (tab: string) => {
+    const setActiveTab = async (tab: string) => {
       activeTab.value = tab
 
-      const newData = async () => {
-        try {
-          const response = await axios.get('https://test.cura-go.de/web/v3/go.vital/protocol?filter=all&page=1', {
-            headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_API_AUTH_TOKEN}`
-            },
-            params: {
-              limit: 10,
-              filter: tab,
-              page: 1
-            }
-          })
-          data.value = response.data.items
-          count.value = response.data.count
-          activePagination.value = 1
-        } catch (error) {
-          console.error('Es gab ein Problem mit dem Abrufvorgang:', error)
-        }
-      }
+      const response = await getData({tab: tab});
 
-      newData()
+      if (response) {
+        data.value = response.items
+        count.value = response.count
+        activePagination.value = 1
+      }
     }
 
     /**
@@ -157,57 +156,15 @@
      * 
      * @param page - Die Seite, die als aktiv gesetzt werden soll.
      */
-    const setActivePagination = (page: number) => {
+    const setActivePagination = async (page: number) => {
       activePagination.value = page
 
-      const newData = async () => {
-        try {
-          const response = await axios.get('https://test.cura-go.de/web/v3/go.vital/protocol', {
-            headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_API_AUTH_TOKEN}`
-            },
-            params: {
-              limit: 10,
-              filter: activeTab.value,
-              page: page
-            }
-          })
-          data.value = response.data.items
-        } catch (error) {
-            console.error('There was a problem with the fetch operation:', error)
-        }
-      }
+      const response = await getData({tab: activeTab.value, page: page});
 
-      newData()
-    }
-
-    /**
-     * Lädt die Daten von der API und aktualisiert die lokalen Daten- und Zählvariablen.
-     */
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('https://test.cura-go.de/web/v3/go.vital/protocol', {
-          headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_API_AUTH_TOKEN}`
-          },
-          params: {
-            limit: 10,
-            filter: "all",
-            page: 1
-          }
-        })
-        data.value = response.data.items
-        count.value = response.data.count
-
-      } catch (error) {
-        console.error('There was a problem with the fetch operation:', error)
+      if (response) {
+        data.value = response.items
       }
     }
-
-    // fetchData wird ausgeführt, wenn die Komponente montiert ist
-    onMounted(() => {
-      fetchData()
-    })
 
     // Funktion zum Abrufen des Icons basierend auf dem Typ
     const getIconComponent = (type: string) => {
