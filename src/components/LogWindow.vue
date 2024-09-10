@@ -121,7 +121,7 @@
   // Components 
     onMounted(() => {
       getLogDataFromAPI({})
-        .then(res => {
+        .then((res: any) => {
           data.value = res.items
           count.value = res.count
         })
@@ -137,7 +137,7 @@
       activeTab.value = tab
 
       getLogDataFromAPI({tab: tab})
-        .then(res => {
+        .then((res: any) => {
           data.value = res.items
           count.value = res.count
           activePagination.value = 1
@@ -149,7 +149,7 @@
       activePagination.value = page
 
       getLogDataFromAPI({tab: activeTab.value, page: page})
-        .then(res => {
+        .then((res: any) => {
           data.value = res.items
         })
         .catch(error => {console.error(error)});
