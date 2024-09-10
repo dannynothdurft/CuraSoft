@@ -28,9 +28,8 @@
 
       <!-- Log Liste -->
       <div>
-        <!-- Wenn Daten vorhanden sind wird die Log Liste ausgegeben -->
-        <div v-if="data" class="log-view-container">
-          <div v-for="item in data" :key="item.id" class="log-view-item-container">
+        <ul v-if="data" class="log-view-container">
+          <li v-for="item in data" :key="item.id" class="log-view-item-container">
             <div class="log-icon">
                 <component :is="getIconComponent(item.typ)" />
             </div> 
@@ -38,14 +37,17 @@
                 <div class="log-msg">{{ getShortMessage(item.message) }}</div>
                 <div class="log-timestemp">{{ formatTimeDifference(item.stamp) }} von {{ item.username }}</div>
             </div>
-          </div>
-        </div>
+          </li>
+        </ul>
         
-        <!-- Loading Spinner solange keine Daten vorhanden sind -->
-        <LoadingSpinner v-else />
+        <LoadingSpinner v-else-if="loading" />
+
+        <div v-else>
+          <p>Keine Ergebnisse gefunden.</p>
+        </div>
       </div>
 
-      <!-- Pagination / Ich hätte es noch Dynamisch gemacht, aber im Mockup sind nur 4 -->
+      <!-- Pagination -->
       <div class="flex justify-end items-center my-4 text-[#ffffff] pb-2 pr-5">
           <div
             v-for="page in filteredPages"
@@ -74,7 +76,7 @@
     import { de } from 'date-fns/locale'
 
     // import utils
-    import { getData } from '../utils/globalFunction'
+    import { getLogDataFromAPI } from '../utils/globalFunction'
 
     // import components
     import TriangleExclamationSolid from './icons/TriangleExclamationSolid.vue'
@@ -93,7 +95,6 @@
     }
 
     // States
-    // States für die Filter Buttons
     const tabs = [
       { key: 'all', label: 'Alle' },
       { key: 'error', label: 'Fehler' },
@@ -101,7 +102,6 @@
       { key: 'log', label: 'Log' }
     ];
 
-    // States für Pagination
     const filteredPages = computed(() => {
       return [
         { number: 1, minCount: 0 },
@@ -112,37 +112,31 @@
     });
 
     // Variablen
+    const loading = ref<boolean>(true);
     const activePagination = ref(1)
     const activeTab = ref('all')
     const count = ref(0)
     const data = ref<LogEntry[] | null>(null)
 
-    // fetchData wird ausgeführt, wenn die Komponente montiert ist
+  // Components 
     onMounted(() => {
-      //Lädt die Daten von der API und aktualisiert die lokalen Daten- und Zählvariablen.
-      getData({})
+      getLogDataFromAPI({})
         .then(res => {
           data.value = res.items
           count.value = res.count
         })
-        .catch(error => {console.error(error)});
+        .catch(error => {
+          console.error('Fehler beim Laden der Daten:', error);
+        })
+        .finally(() => {
+          loading.value = false;
+        });
     })
 
-    /**
-     * Setzt den aktiven Tab und lädt die entsprechenden Daten von der API.
-     *
-     * Diese Funktion aktualisiert den `activeTab`-Wert mit dem ausgewählten Tab
-     * und ruft dann die API auf, um die relevanten Daten basierend auf dem
-     * aktuellen Tab abzurufen. Die Daten werden dann in der Variablen
-     * `data` und `count` gespeichert, und die Paginierung wird auf die erste Seite
-     * zurückgesetzt.
-     *
-     * @param tab - Der Pfad oder die Bezeichnung des aktuellen Tabs, der ausgewählt wurde.
-     */
     const setActiveTab = (tab: string) => {
       activeTab.value = tab
 
-      getData({tab: tab})
+      getLogDataFromAPI({tab: tab})
         .then(res => {
           data.value = res.items
           count.value = res.count
@@ -151,22 +145,16 @@
         .catch(error => {console.error(error)});
     }
 
-    /**
-     * Setzt die aktuelle Seite für die Pagination und lädt die Daten für diese Seite.
-     * 
-     * @param page - Die Seite, die als aktiv gesetzt werden soll.
-     */
     const setActivePagination = (page: number) => {
       activePagination.value = page
 
-      getData({tab: activeTab.value, page: page})
+      getLogDataFromAPI({tab: activeTab.value, page: page})
         .then(res => {
           data.value = res.items
         })
         .catch(error => {console.error(error)});
     }
 
-    // Funktion zum Abrufen des Icons basierend auf dem Typ
     const getIconComponent = (type: string) => {
       switch (type) {
         case 'log':
@@ -180,13 +168,11 @@
       }
     }
 
-    // Funktion zum Kürzen der Nachricht
     const getShortMessage = (message: string) => {
       const index = message.indexOf(' vom ')
       return index !== -1 ? message.slice(0, index) : message
     }
 
-    // Funktion zur Berechnung der Zeitdifferenz
     const formatTimeDifference = (timestamp: any) => {
       return formatDistanceToNowStrict(new Date(timestamp), { addSuffix: true, locale: de })
     }
@@ -201,7 +187,6 @@
     padding: 10px 20px;
   }
 
-  /* Entferne das border-bottom für den letzten Eintrag */
   .log-view-item-container:last-child {
     border-bottom: none;
   }
